@@ -1,0 +1,41 @@
+#!/bin/bash
+PROJECT_NAME="dutkovo"
+echo "Input project name:[$PROJECT_NAME]"
+read req
+if [ "$req" != "" ]; then
+  PROJECT_NAME=$req
+fi
+echo " "
+echo "Create app php-5.3? y/n"
+read req
+if [ "$req" == "y" ]; then
+	rhc app create -a $PROJECT_NAME -t php-5.3
+fi
+echo " "
+echo "add cartridge mysql-5.1? y/n"
+read req
+if [ "$req" == "y" ]; then
+	rhc cartridge add -a $PROJECT_NAME -c mysql-5.1
+fi
+
+cd $PROJECT_NAME
+git remote add upstream -m master git://github.com/eparst/dutkovo.git
+git pull -s recursive -X theirs upstream master
+# note that the git pull above can be used later to pull updates to Joomla
+git push
+echo " "
+echo "download .sql and app-dir from storage? y/n"
+read req
+if [ "$req" == "y" ]; then
+	echo "Input login data in format [user:passw] please: "
+	read req
+fi
+echo " "
+if [ "$req" != "" ]; then
+	curl --user $req -o .openshift/action_hooks/$PROJECT_NAME.sql https://webdav.yandex.ru/backups/sql/$PROJECT_NAME.sql 
+	curl --user $req -o php/$PROJECT_NAME.tar https://webdav.yandex.ru/backups/www/$PROJECT_NAME.tar
+	tar xf $PROJECT_NAME/php php/$PROJECT_NAME.tar
+	rm -f php/$PROJECT_NAME.tar
+fi
+
+./push
