@@ -1,6 +1,8 @@
 backup:
 mysqldump -u username -ppassword database_name > dump.sql 
 
+RUN ./inst.sh OR:
+
 to php copy 1.5v
 
 Joomla on OpenShift
