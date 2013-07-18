@@ -61,8 +61,8 @@ var $sef_suffix    = '0';
 /* Feed Settings */
 var $feed_limit   = 10;
 var $feed_email   = 'author';
-var $log_path = '/home/www/med24.ru/logs';
-var $tmp_path = '/home/www/med24.ru/tmp';
+#var $log_path = '/home/www/med24.ru/logs';
+#var $tmp_path = '/home/www/med24.ru/tmp';
 /* Session Setting */
 var $lifetime = '15';
 var $session_handler = 'database';
