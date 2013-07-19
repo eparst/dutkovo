@@ -19,7 +19,7 @@ if [ "$req" == "y" ]; then
 fi
 
 echo " "
-$typ = "2"
+typ = "2"
 echo "MODx:(1), Joomla:(2) ? 1/2 [default: Joomla]"
 read typ
 
