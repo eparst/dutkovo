@@ -5,7 +5,7 @@ RUN ./inst.sh OR:
 
 to php copy 1.5v
 
-Joomla on OpenShift
+Joomla/MODx on OpenShift
 ===================
 
 This git repository helps you get up and running quickly w/ a Joomla installation
