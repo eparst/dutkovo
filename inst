@@ -18,25 +18,44 @@ if [ "$req" == "y" ]; then
 	rhc cartridge add -a $PROJECT_NAME -c mysql-5.1
 fi
 
+echo " "
+$typ = "2"
+echo "MODx:(1), Joomla:(2) ? 1/2 [default: Joomla]"
+read typ
+
 cd $PROJECT_NAME
-git remote add upstream -m master git://github.com/eparst/dutkovo.git
-git pull -s recursive -X theirs upstream master
-# note that the git pull above can be used later to pull updates to Joomla
-git push
 echo " "
 echo "download .sql and app-dir from storage? y/n"
 read req
 if [ "$req" == "y" ]; then
 	echo "Input login data in format [user:passw] please: "
-	read req
+	read login
+	echo " "
+	if [ "$login" != "" ]; then
+		curl --user $login -o .openshift/action_hooks/$PROJECT_NAME.sql https://webdav.yandex.ru/backups/sql/$PROJECT_NAME.sql 
+		curl --user $login -o php/$PROJECT_NAME.tar https://webdav.yandex.ru/backups/www/$PROJECT_NAME.tar
+		cd php
+		tar xf $PROJECT_NAME.tar
+		rm -f $PROJECT_NAME.tar
+		rm -f configuration.php
+		cd ..
+	fi
 fi
-echo " "
-if [ "$req" != "" ]; then
-	curl --user $req -o .openshift/action_hooks/$PROJECT_NAME.sql https://webdav.yandex.ru/backups/sql/$PROJECT_NAME.sql 
-	curl --user $req -o php/$PROJECT_NAME.tar https://webdav.yandex.ru/backups/www/$PROJECT_NAME.tar
+git remote add upstream -m master git://github.com/eparst/dutkovo.git
+git pull -s recursive -X theirs upstream master
+
+if [ "$typ" == "2" ]; then
 	cd php
-	tar xf $PROJECT_NAME.tar
-	rm -f $PROJECT_NAME.tar
-fi
+	mv $PROJECT_NAME"_configuration.php" configuration.php
+	rm -f $PROJECT_NAME"_configuration.php"
+fi	
+if [ "$typ" == "1" ]; then
+	cd php
+	mv $PROJECT_NAME"_config.inc.php" manager/includes/config.inc.php
+	rm -f $PROJECT_NAME"_config.inc.php"
+fi	
 cd ..
+# note that the git pull above can be used later to pull updates to Joomla
+#git push
+
 ./push
