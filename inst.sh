@@ -3,14 +3,13 @@ ROJECT_NAME="dutkovo"
 echo "Input project name:[$PROJECT_NAME]"
 read req
 if [ "$req" != "" ]; then
-  PROJECT_NAME=$req
+	PROJECT_NAME=$req
 fi
 cd $PROJECT_NAME
 #######################################
 echo " "
-echo "install rhc: (1)"
-echo "install heroku: (2)"
-echo "dont install: (0)"
+echo "install rhc: (1), setup rhc-app: (11)"
+echo "install heroku: (2), setup heroku-app: (22)"
 read paas
 if [ "$paas" == "1" ]; then
 	sudo gem install rhc
@@ -19,25 +18,31 @@ fi
 if [ "$paas" == "2" ]; then
 	wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
 	heroku login
-	heroku create
 	exit
 fi
-
-echo "Create app php-5.3? y/n"
-read req
-if [ "$req" == "y" -a $paas == "1"]; then
-	rhc app create -a $PROJECT_NAME -t php-5.3
+if [ "$paas" == "22" ]; then
+	heroku create $PROJECT_NAME
+	mkdir $PROJECT_NAME
+	exit
 fi
-if [ "$req" == "y" -a $paas == "2"]; then
-	rhc app create -a $PROJECT_NAME -t php-5.3
+#######################################
+if [ "$paas" == "1" -o "$paas" == "11" ]; then
+	echo "Create app php-5.3? y/n"
+	read req
+	if [ "$req" == "y" ]; then
+		rhc app create -a $PROJECT_NAME -t php-5.3
+	fi
+	if [ "$req" == "y" ]; then
+		rhc app create -a $PROJECT_NAME -t php-5.3
+	fi
+	echo " "
+	echo "add cartridge mysql-5.1? y/n"
+	read req
+	if [ "$req" == "y" ]; then
+		rhc cartridge add -a $PROJECT_NAME -c mysql-5.1
+	fi
 fi
-echo " "
-echo "add cartridge mysql-5.1? y/n"
-read req
-if [ "$req" == "y" ]; then
-	rhc cartridge add -a $PROJECT_NAME -c mysql-5.1
-fi
-
+#######################################
 echo " "
 typ = "2"
 echo "MODx:(1), Joomla:(2) ? 1/2 [default: Joomla]"
